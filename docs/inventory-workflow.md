@@ -7,8 +7,8 @@ do not rebuild inventory from chat history or the old JSON snapshots.
 ## End-to-end batch
 
 1. James takes a photo on the dedicated Samsung and asks for identification/sorting.
-2. Run `python lab-photos/photos.py list` then `latest` or `fetch NAME`. Confirm the
-   selected photo belongs to this batch; latest can be an older, unrelated photo.
+2. Run `python lab-photos/photos.py wait` (or `latest --max-age 10`, or `fetch NAME`).
+   Plain `latest` can return an older, unrelated photo. Or use `/identify part|box`.
 3. Inspect the original resolution, read markings, and keep uncertain IDs explicit.
    Photo arrival alone does not authorize printing or assigning guessed contents.
 4. Read the relevant box/item notes and index. Choose practical existing categories,
@@ -18,7 +18,7 @@ do not rebuild inventory from chat history or the old JSON snapshots.
 6. Generate and inspect the label preview, then print requested copies. If printing
    fails, report that separately from the inventory update; do not claim it printed.
 7. Report affected files and physical label sends. Record any unresolved placement.
-8. Commit and push the reviewed batch under the standing authorization below; verify
+8. Commit and push the reviewed batch under the standing authorization in the vault's AGENTS.md; verify
    synchronization before ending the batch or pausing the session.
 
 The workflow is currently agent-assisted. There is no transaction spanning paper,
@@ -101,24 +101,11 @@ ELECROW HMI outer placements remain unconfirmed. Box shelf locations remain unkn
 Small-parts boxes and about 15 drawers remain to inventory. The live vault, not this
 dated paragraph, decides future state.
 
-## Identification, labels and sorting expectations
+## Identification rules and push authorization
 
-- James expects active organization: identify the actual parts, explain what they do, print accurate useful labels, and direct each group to a named existing box.
-- Inspect the specific item or bag in the original photos before labeling. Do not substitute identification of a similar nearby board.
-- Component labels should state the most specific supported part/model or family, its plain-language function, and a practical project use. Include confirmed quantities and useful verified electrical details where space permits.
-- Generic words such as "logic board", "module" or "charger" alone are insufficient. A model number alone is also insufficient without its function.
-- Distinguish confirmed markings, inferred family identification and unknown ratings. If the evidence is insufficient for a useful accurate label, request a targeted close-up or marking instead of printing a vague placeholder.
-- Direct loose LEDs, screws, standoffs, wire nuts and ordinary battery holders to suitable existing boxes. Do not print labels for trivial loose supplies unless requested.
-- Keep battery holders bagged with their associated circuit boards together. Label the combined group's actual function.
-- Give specific "Put these in BOX NAME" directions. Record placements only after James confirms they happened.
-
-## Standing authorization for regular Git pushes
-
-- On 2026-11-21, James confirmed that `devmjh/lab-context` and the original `devmjh/lab-inventory` repositories are private and authorized regular inventory-project commits and pushes. On 2026-11-22, James explicitly designated `devmjh/lab-labeling` as the labeling code repository and requested its initial upload. Continue regular in-scope tool pushes here and inventory pushes to lab-context; this is continuing authorization.
-- Commit and push reviewed inventory/context updates to `devmjh/lab-context` and relevant tooling/workflow updates to `devmjh/lab-labeling` after each completed inventory batch and before pausing or ending a work session. Do not wait for James to request a push. Skip empty commits and pushes when already synchronized.
-- Routine pushes of these in-scope records to the existing `origin main` destinations do not need renewed user confirmation. Keep the live inventory in the Obsidian repository; do not duplicate it into the tooling repository.
-- Read current repository instructions, inspect status, synchronize safely, stage intended files explicitly, review the staged diff, exclude credentials and ignored private material, then commit and push. Preserve unrelated edits. Verify the final working-tree status and that HEAD matches `origin/main`; report failures clearly.
-- This authorization does not cover unrelated repositories, a changed remote destination, making either repository public, force-pushing, or uploading secrets. Automatic approval controls still apply; include this explicit user authorization and the exact destination when requesting a required escalation. Never bypass a rejection.
+Identification and sorting expectations live in the `lab-inventory` skill
+(`.claude/skills/lab-inventory/SKILL.md`). The standing Git push authorization
+lives in the vault's `AGENTS.md`. They are kept in one place each so they cannot drift.
 
 ## Labeling repository migration, 2026-11-22
 

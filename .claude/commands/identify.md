@@ -15,6 +15,9 @@ Anything else after `box` is the box name.)
 Read the printed path once with Read. Do not fetch extra photos unless I ask:
 each image costs tokens. Photos are temporary; never copy them anywhere.
 
+Use the **lab-inventory** skill for both modes and the **lab-label-writer** skill
+for label text.
+
 ## 2a. Mode `part`: identify a component, logic board or device
 - Read every legible marking. Separate **confirmed** (read from the photo),
   **inferred** (family by appearance/layout) and **unknown** (ratings, revision).
