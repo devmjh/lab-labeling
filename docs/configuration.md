@@ -5,7 +5,7 @@ runbook. Server mount, SFTP configuration and timer were read back during consol
 
 | Component | Configuration |
 | --- | --- |
-| Camera | Dedicated Samsung SM-G990U1, Android 15, normal Camera app |
+| Camera | Dedicated Samsung SM-G990U1, Android 16 (read back 2026-11-22), normal Camera app |
 | Upload application | FolderSync 4.16.0, account `Lab-Photos`, folder pair `Lab-Camera` |
 | Source | `/storage/emulated/0/DCIM/Camera` |
 | SFTP destination | `rdulx009.labnet.int:22`, user `labphoto`, chroot-relative `/inbox` |

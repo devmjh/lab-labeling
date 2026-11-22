@@ -8,7 +8,7 @@ component-photo inbox tools. Repository: https://github.com/devmjh/lab-labeling
 On Debian/Ubuntu install the following packages (use equivalents on other distributions):
 
 ```sh
-sudo apt-get install python3 python3-venv python3-tk fonts-dejavu-core openssh-client
+sudo apt-get install python3 python3-venv python3-tk fonts-dejavu-core openssh-client adb
 git clone git@github.com:devmjh/lab-labeling.git
 cd lab-labeling
 python3 -m venv .venv
@@ -127,17 +127,63 @@ Changed content/copies are new jobs requiring preview. Logs cannot confirm physi
 printing, resolve interrupted sends or prevent duplicates across separate computers.
 Actual batch manifests and send logs stay local; the example contains no inventory.
 
-## Photos and shared context
+## Phone photos: from camera to label
 
-```sh
-.venv/bin/python lab-photos/photos.py list
-.venv/bin/python lab-photos/photos.py fetch PHOTO_FILENAME.jpg
+Photos are the evidence for every component label. The pipeline is hands-off:
+
+```text
+Samsung SM-G990U1 camera ──FolderSync instant upload (SFTP, Wi-Fi)──> rdulx009:/srv/lab-photos/inbox
+        (normal Camera app)        3-6 s typical, retries every 5 min          (14-day temporary inbox)
+                                                                                      │
+                     labnet007 / Windows:  lab-photos/photos.py (SSH, read-only) <────┘
+                                                   │
+                               agent inspects original → label text → label app preview → print
 ```
 
-Photo access requires your own authorized OpenSSH alias `rdulx009`. Keys are not
-included. See [configuration](docs/configuration.md) and [photo intake](docs/photo-inbox.md).
-The cache and server inbox are temporary. Included server provisioning/retention
-sources are references, not workstation setup steps; do not run them to test labeling.
+### Everyday use
+
+1. Take the photo with the normal Camera app. Nothing else to tap.
+2. On the computer, fetch it (use `python` instead of `.venv/bin/python` on Windows):
+
+```sh
+.venv/bin/python lab-photos/photos.py wait             # waits for the NEXT photo, then downloads it
+.venv/bin/python lab-photos/photos.py latest --max-age 10   # newest, refused if older than 10 min
+.venv/bin/python lab-photos/photos.py list             # newest first, JSON
+.venv/bin/python lab-photos/photos.py fetch 20261122_154654.jpg
+```
+
+   Each prints a local path under `lab-photos/cache/` (disposable, 1 GiB cap).
+   Prefer `wait` or `latest --max-age`: plain `latest` can return an old, unrelated photo.
+3. An agent (or you) reads the original image, identifies the part, writes the label
+   text (see the `lab-label-writer` skill), previews it in the label app, then prints.
+4. Save any photo worth keeping outside the inbox: it expires after 14 days.
+
+### Health checks
+
+```sh
+.venv/bin/python lab-photos/photos.py status   # server disk use and retention timer
+.venv/bin/python lab-photos/photos.py phone    # read-only adb check of the phone (USB debugging on)
+```
+
+`phone` verifies: model and Android version, FolderSync installed and not force-stopped,
+battery-optimization exemption, instant-sync service running in the foreground,
+automatic date/time (filenames are timestamps), and that every camera photo from the
+last 13 days is on the server. It changes nothing on the phone. Last run 2026-11-22:
+all checks passed, 49 of 49 phone photos present on the server.
+
+### If photos stop arriving
+
+| Symptom | Check |
+| --- | --- |
+| `wait` times out | Phone on lab Wi-Fi? FolderSync monitoring notification visible? Unlock once after a reboot. Allow up to 5 min for the scheduled retry. |
+| `phone` reports service not running | Open FolderSync once; do not force-stop it. Confirm battery setting is "Unrestricted". |
+| `Could not reach rdulx009` | Lab network/VPN, `ssh rdulx009` works by itself, key loaded. |
+| Uploads fail, server full | `status`; the 12 GiB filesystem is the hard cap, retention trims above 8 GiB. |
+
+Full phone/server configuration and recovery: [configuration](docs/configuration.md) and
+[photo intake](docs/photo-inbox.md). Photo access requires your own authorized OpenSSH
+alias `rdulx009`; keys are never in this repository. Server provisioning/retention sources
+are references, not workstation setup steps; do not run them to test labeling.
 
 The inventory and durable lab context remain in the separate Obsidian repository
 `devmjh/lab-context`. Pull that repository on each computer, then read its `AGENTS.md`
