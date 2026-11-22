@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.venv/
+private/
+cache/
+outputs/
+*.partial
+.env
+*.pem
+*.key
+*.p12
+*.pfx
+id_ed25519*
+id_rsa*
+phone.pub
+Inventory/
+.obsidian/
+
+# Local component manifests and print histories
+component-labels-*.json
+*-label-sends-*.jsonl
+local/
