@@ -57,6 +57,14 @@ class AppLogicTests(unittest.TestCase):
         self.assertIn(b"^PQ1", self.sender.calls[0][2])
         self.assertIn(b"^LT40", self.sender.calls[0][2])
 
+    def test_usb_sheets_print_lower_than_box_labels(self):
+        for job, lt in (({"kind": "usb", "names": ["A"], "rows": 4, "length_mm": 40,
+                          "font_px": None, "copies": 1}, b"^LT50"),
+                        ({"kind": "box", "lines": ["A"], "copies": 2}, b"^LT40")):
+            fp = self.preview(job)["fingerprint"]
+            self.app.print_job({"job": job, "fingerprint": fp})
+            self.assertIn(lt, self.sender.calls[-1][2])
+
     def test_recent_repeat_needs_confirmation(self):
         job = {"kind": "bag", "lines": ["ESP32"], "copies": 1}
         fp = self.preview(job)["fingerprint"]

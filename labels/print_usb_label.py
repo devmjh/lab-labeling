@@ -12,6 +12,10 @@ except ImportError:
 
 
 ROW_CHOICES = (2, 3, 4)
+# Added to the printer's +5 mm calibration for strip sheets only. A photo of the
+# first four-strip sheet (2026-11-22) showed the top name almost touching the
+# edge and ~2.6-3.5 mm spare at the bottom, so strips print 1.25 mm lower.
+USB_EXTRA_OFFSET_MM = 1.25
 FONT_PX_RANGE = (10, 120)
 
 
@@ -94,7 +98,7 @@ def main():
         output = Path(args.output)
         output.parent.mkdir(parents=True, exist_ok=True)
         label.save(output.with_suffix(".png"))
-        zpl = to_zpl(label, copies=1)
+        zpl = to_zpl(label, offset_mm=5.0 + USB_EXTRA_OFFSET_MM, copies=1)
         output.with_suffix(".zpl").write_text(zpl, encoding="ascii")
         if args.send:
             with socket.create_connection((args.host, args.port), timeout=5) as printer:

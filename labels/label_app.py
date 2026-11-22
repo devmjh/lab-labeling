@@ -191,7 +191,8 @@ def render_job(job, settings):
         warnings.append("Contains an em-dash; lab convention is slashes or plain hyphens.")
     copies = job["copies"]
     summary += f" · {copies} cop{'ies' if copies != 1 else 'y'}"
-    zpl = box.to_zpl(image, settings["offset_mm"], copies)
+    offset = settings["offset_mm"] + (usb.USB_EXTRA_OFFSET_MM if job["kind"] == "usb" else 0)
+    zpl = box.to_zpl(image, offset, copies)
     return image, zpl, {"summary": summary, "warnings": warnings, "metrics": metrics}
 
 

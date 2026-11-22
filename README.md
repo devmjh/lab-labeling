@@ -99,7 +99,10 @@ four strips (about 7.9 mm each), and `""` to leave a middle strip blank.
 
 Inspect the PNG and check the usable flat area on the stick before repeating the
 same command with `--print`. Four strips are about 7.9 mm high, three about 10.5 mm,
-two about 15.8 mm. Four strips at 40 mm were printed and confirmed to fit on 2026-11-22. `--length-mm` accepts 15 to 55 mm, default 40. Each send prints one
+two about 15.8 mm. Four strips at 40 mm were printed and confirmed to fit on 2026-11-22. A photo showed
+the sheet sitting high, so strip sheets print 1.25 mm lower than box labels (`^LT50`
+instead of `^LT40`); box/bag calibration is unchanged. The lowered sheet is not yet
+physically checked; look at the next real USB sheet you print. `--length-mm` accepts 15 to 55 mm, default 40. Each send prints one
 full sheet. To save media, supply up to three different names together. Do not
 feed manually cut strips back through the printer. This CLI does not inspect USB
 devices; identification and Obsidian inventory recording remain agent-assisted.
