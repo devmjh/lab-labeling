@@ -59,6 +59,24 @@ Windows uses Arial Bold; Linux uses DejaVu Sans Bold. Dimensions remain the same
 but font appearance can differ. Use `--font /path/to/font.ttf` if desired and always
 preview after changing computers/fonts. See [label details](docs/labels.md).
 
+## USB stick strips
+
+Use the separate strip format for short USB names. It keeps the calibrated
+456 x 253 dot sheet and +5 mm offset, with two or three horizontal strips.
+Supply one name per occupied strip; unused strips stay blank. Dashed horizontal
+guides separate strips, and short vertical marks show the trim length.
+
+```sh
+.venv/bin/python labels/print_usb_label.py "UBUNTU SRV 26.04" --rows 3 --length-mm 40 --output outputs/usb-ubuntu
+```
+
+Inspect the PNG and check the usable flat area on the stick before repeating the
+same command with `--print`. Three strips are about 10.5 mm high; two are about
+15.8 mm high. `--length-mm` accepts 15 to 55 mm, default 40. Each send prints one
+full sheet. To save media, supply up to three different names together. Do not
+feed manually cut strips back through the printer. This CLI does not inspect USB
+devices; identification and Obsidian inventory recording remain agent-assisted.
+
 ## Batch helpers
 
 Both portable helpers accept a JSON manifest instead of yesterday's hardcoded paths:
