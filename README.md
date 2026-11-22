@@ -29,7 +29,31 @@ python -m venv .venv
 .venv/Scripts/python -m unittest discover -s tests -v
 ```
 
-## Preview, then print
+## Label app (recommended)
+
+```sh
+.venv/bin/python labels/label_app.py            # opens http://127.0.0.1:8765
+.venv/bin/python labels/label_app.py --dry-run  # practice: writes ZPL to local/dry-run/, never prints
+```
+
+On Windows use `.venv/Scripts/python`. The app runs only on this computer (127.0.0.1)
+and needs no extra packages. It offers:
+
+- Box, Bag/device and USB strip (2, 3 or 4 rows) editors with a live preview. The
+  preview is the exact raster that prints; Print stays disabled until it is current.
+- USB text size: Auto-fit, or Fixed px (Small/Medium/Large) for modest text like `32GB`.
+  Fixed text is never enlarged and never cropped; you are told if it does not fit.
+- Readability warnings below 2.5 mm text height, and text heights per line in mm.
+- A confirm step before every send, a "sent N seconds ago, send again?" guard,
+  and honest outcomes: Sent, Failed (nothing sent), or Outcome unknown.
+- Queue of saved drafts and auto-saved work that survive restarts.
+- History with search, Reprint, Edit copy, and "Printed OK / Problem" confirmation.
+- Printer host/port settings, a connection test that sends no data, light/dark theme.
+- Shortcuts: Ctrl+Enter print, Ctrl+S queue, Alt+1/2/3 label type.
+
+Drafts, queue, history and settings live in `local/ui-*.json` (ignored by Git).
+
+## Preview, then print (command line)
 
 Run from the repository root. On Windows substitute `.venv/Scripts/python`:
 
@@ -62,7 +86,7 @@ preview after changing computers/fonts. See [label details](docs/labels.md).
 ## USB stick strips
 
 Use the separate strip format for short USB names. It keeps the calibrated
-456 x 253 dot sheet and +5 mm offset, with two or three horizontal strips.
+456 x 253 dot sheet and +5 mm offset, with two, three or four horizontal strips.
 Supply one name per occupied strip; unused strips stay blank. Dashed horizontal
 guides separate strips, and short vertical marks show the trim length.
 
@@ -70,9 +94,12 @@ guides separate strips, and short vertical marks show the trim length.
 .venv/bin/python labels/print_usb_label.py "UBUNTU SRV 26.04" --rows 3 --length-mm 40 --output outputs/usb-ubuntu
 ```
 
+Add `--font-px 28` for a fixed, modest text size instead of auto-fit, `--rows 4` for
+four strips (about 7.9 mm each), and `""` to leave a middle strip blank.
+
 Inspect the PNG and check the usable flat area on the stick before repeating the
-same command with `--print`. Three strips are about 10.5 mm high; two are about
-15.8 mm high. `--length-mm` accepts 15 to 55 mm, default 40. Each send prints one
+same command with `--print`. Four strips are about 7.9 mm high, three about 10.5 mm,
+two about 15.8 mm. Four-strip physical fit is not yet confirmed. `--length-mm` accepts 15 to 55 mm, default 40. Each send prints one
 full sheet. To save media, supply up to three different names together. Do not
 feed manually cut strips back through the printer. This CLI does not inspect USB
 devices; identification and Obsidian inventory recording remain agent-assisted.
@@ -117,7 +144,11 @@ Obsidian. Identification and inventory updates remain agent-assisted.
 
 ## Project contents and provenance
 
+- `labels/label_app.py`, `labels/web/index.html`: local web UI and its small server.
 - `labels/print_box_label.py`: calibrated renderer, CLI, GUI and TCP transport.
+- `labels/print_usb_label.py`: USB strip renderer and CLI.
+- `.claude/`: the `/label` slash command and `lab-label-writer` skill for Claude Code
+  (see [commands and skills](docs/claude-code-commands-and-skills.md)).
 - `labels/batch_labels.py`: portable batch previews and send log.
 - `preview-component-labels.py`, `print-component-labels.py`: batch entry points.
 - `tests/`: mocked printer tests and temporary retention fixtures.

@@ -21,7 +21,7 @@ def render_label(lines, width=456, height=253, margin=8, border=False, font_path
     lines = [line.strip() for line in lines if line.strip()]
     if not lines:
         raise ValueError("Enter at least one line of text.")
-    if not 64 <= width <= 832 or not 64 <= height <= 2000:
+    if not 64 <= width <= 832 or not 32 <= height <= 2000:
         raise ValueError("Label dimensions exceed supported limits.")
     gap = 8
     usable_width = width - 2 * margin

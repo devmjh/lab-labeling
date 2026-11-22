@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Labels</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f6feb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='.5' fill='%232f6feb'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f4f5f7; --panel: #ffffff; --panel-2: #f8f9fb; --line: #e3e6eb; --line-2: #d3d8df;
+  --text: #16191d; --muted: #5d6673; --faint: #8a93a0;
+  --accent: #2f6feb; --accent-ink: #ffffff; --accent-soft: #e8f0fe;
+  --ok: #1a7f37; --ok-soft: #e6f4ea; --warn: #9a6700; --warn-soft: #fff4d6;
+  --bad: #c62828; --bad-soft: #fdecec; --info-soft: #eef1f5;
+  --paper: #ffffff; --paper-shadow: 0 1px 2px rgba(16,24,40,.08), 0 8px 24px rgba(16,24,40,.08);
+  --radius: 12px; --radius-sm: 8px;
+  --focus: 0 0 0 3px rgba(47,111,235,.35);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1115; --panel: #171a20; --panel-2: #1c2027; --line: #2a2f38; --line-2: #363c47;
+    --text: #e8eaee; --muted: #a2a9b4; --faint: #737b87;
+    --accent: #5b8ff9; --accent-ink: #0b1020; --accent-soft: #1d2a44;
+    --ok: #4ac26b; --ok-soft: #14301d; --warn: #e3b341; --warn-soft: #3a2e10;
+    --bad: #f47067; --bad-soft: #3d1a1a; --info-soft: #222731;
+    --paper-shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1115; --panel: #171a20; --panel-2: #1c2027; --line: #2a2f38; --line-2: #363c47;
+  --text: #e8eaee; --muted: #a2a9b4; --faint: #737b87;
+  --accent: #5b8ff9; --accent-ink: #0b1020; --accent-soft: #1d2a44;
+  --ok: #4ac26b; --ok-soft: #14301d; --warn: #e3b341; --warn-soft: #3a2e10;
+  --bad: #f47067; --bad-soft: #3d1a1a; --info-soft: #222731;
+  --paper-shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.45);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; color: inherit; }
+svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+:focus-visible { outline: none; box-shadow: var(--focus); }
+
+/* Shell */
+.app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.rail { border-right: 1px solid var(--line); background: var(--panel); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 18px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
+.brand .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; }
+.nav { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius-sm); border: 0; background: none; text-align: left; cursor: pointer; color: var(--muted); font-weight: 500; }
+.nav:hover { background: var(--panel-2); color: var(--text); }
+.nav[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+.nav .badge { margin-left: auto; }
+.rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 0 4px; }
+.printer-pill { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel-2); cursor: pointer; text-align: left; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+.dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
+main { padding: 24px 28px 48px; min-width: 0; }
+.page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.page-head h1 { font-size: 20px; margin: 0; letter-spacing: -.015em; }
+.page-head .sub { color: var(--muted); }
+.spacer { flex: 1; }
+.dry-banner { display: none; background: var(--warn-soft); color: var(--warn); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 16px; font-weight: 500; align-items: center; gap: 8px; }
+.dry .dry-banner { display: flex; }
+
+/* Cards & controls */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.card-pad { padding: 18px; }
+.section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 600; margin: 0 0 10px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field > label, .label { font-weight: 600; font-size: 13px; }
+.hint { color: var(--muted); font-size: 12px; }
+.input { width: 100%; padding: 9px 12px; border: 1px solid var(--line-2); border-radius: var(--radius-sm); background: var(--panel); transition: border-color .12s, box-shadow .12s; }
+.input:hover { border-color: var(--faint); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus); }
+.input.big { font-size: 18px; font-weight: 700; padding: 11px 14px; letter-spacing: .01em; }
+.input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 14px; border-radius: var(--radius-sm); border: 1px solid var(--line-2); background: var(--panel); cursor: pointer; font-weight: 600; white-space: nowrap; }
+.btn:hover { background: var(--panel-2); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.07); }
+.btn.danger { color: var(--bad); }
+.btn.ghost { border-color: transparent; background: none; color: var(--muted); }
+.btn.ghost:hover { background: var(--panel-2); color: var(--text); }
+.btn.icon { padding: 7px; }
+.btn.lg { padding: 12px 18px; font-size: 15px; }
+.btn.block { width: 100%; }
+.seg { display: inline-flex; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: none; padding: 7px 14px; border-radius: 7px; cursor: pointer; color: var(--muted); font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+.seg button[aria-pressed="true"] { background: var(--panel); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.kind-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.kind { border: 1px solid var(--line-2); background: var(--panel); border-radius: var(--radius); padding: 12px 14px; cursor: pointer; text-align: left; display: flex; gap: 12px; align-items: flex-start; transition: border-color .12s, background .12s; }
+.kind:hover { border-color: var(--faint); }
+.kind[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.kind .ic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--panel-2); color: var(--muted); flex: none; }
+.kind[aria-pressed="true"] .ic { background: var(--accent); color: var(--accent-ink); }
+.kind b { display: block; font-size: 14px; }
+.kind span { color: var(--muted); font-size: 12px; }
+.kbd { font: 11px ui-monospace, monospace; border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; color: var(--muted); }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--info-soft); color: var(--muted); }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+.badge.accent { background: var(--accent-soft); color: var(--accent); }
+
+/* Editor layout */
+.create { display: grid; grid-template-columns: minmax(360px, 1fr) minmax(420px, 1.05fr); gap: 20px; align-items: start; }
+.rows { display: flex; flex-direction: column; gap: 8px; }
+.row { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; }
+.row .num { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; font-weight: 700; font-size: 12px; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); }
+.row .tools { display: flex; gap: 2px; }
+.row.blank .input { border-style: dashed; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line-2); border-radius: var(--radius-sm); overflow: hidden; }
+.stepper button { border: 0; background: var(--panel-2); padding: 8px 12px; cursor: pointer; font-weight: 700; }
+.stepper input { width: 52px; text-align: center; border: 0; padding: 8px 0; background: var(--panel); font-weight: 700; }
+.stepper input:focus { outline: none; }
+.inline { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.range { display: grid; grid-template-columns: 1fr 72px; gap: 12px; align-items: center; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.value-box { text-align: center; font-weight: 700; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel-2); font-variant-numeric: tabular-nums; }
+.editor-foot { display: flex; gap: 8px; border-top: 1px solid var(--line); padding: 14px 18px; background: var(--panel-2); border-radius: 0 0 var(--radius) var(--radius); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line-2); background: var(--panel); border-radius: 999px; padding: 4px 10px; font-size: 12px; cursor: pointer; color: var(--muted); font-weight: 600; }
+.chip:hover { color: var(--text); border-color: var(--faint); }
+
+/* Preview */
+.preview-card { position: sticky; top: 24px; }
+.stage { background:
+    radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0) 0 0 / 16px 16px, var(--panel-2);
+  border-radius: var(--radius) var(--radius) 0 0; padding: 52px 20px 32px; display: grid; place-items: center; min-height: 300px; position: relative; overflow: auto; }
+.paper { background: var(--paper); box-shadow: var(--paper-shadow); border-radius: 10px; padding: 0; position: relative; line-height: 0; transition: opacity .15s; }
+.paper img { display: block; image-rendering: pixelated; border-radius: 10px; max-width: 100%; }
+.paper.stale { opacity: .45; }
+.paper.empty { width: 456px; height: 253px; max-width: 100%; display: grid; place-items: center; color: #8a93a0; line-height: 1.4; font-weight: 500; }
+.dims { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.zoom { position: absolute; top: 10px; right: 10px; }
+.zoom .seg button { padding: 4px 9px; font-size: 12px; }
+.preview-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+.status-line { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.status-line .sum { color: var(--muted); font-weight: 500; }
+.notes { display: flex; flex-direction: column; gap: 6px; }
+.note { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; }
+.note.warn { background: var(--warn-soft); color: var(--warn); }
+.note.bad { background: var(--bad-soft); color: var(--bad); }
+.note.ok { background: var(--ok-soft); color: var(--ok); }
+.note.info { background: var(--info-soft); color: var(--muted); }
+.metrics { display: flex; gap: 6px; flex-wrap: wrap; }
+.metric { font-size: 12px; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; font-variant-numeric: tabular-nums; }
+.metric.small { color: var(--warn); border-color: var(--warn); }
+.print-row { display: flex; gap: 10px; align-items: center; }
+.print-row .target { color: var(--muted); font-size: 12px; }
+
+/* Lists */
+.list { display: flex; flex-direction: column; }
+.item { display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.item:last-child { border-bottom: 0; }
+.item .ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--panel-2); color: var(--muted); }
+.item .title { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .meta { color: var(--muted); font-size: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
+.item .acts { display: flex; gap: 6px; align-items: center; }
+.empty-state { padding: 48px 20px; text-align: center; color: var(--muted); }
+.empty-state .ic { width: 52px; height: 52px; border-radius: 14px; background: var(--panel-2); display: grid; place-items: center; margin: 0 auto 12px; color: var(--faint); }
+.empty-state h3 { margin: 0 0 4px; color: var(--text); font-size: 15px; }
+.toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.toolbar .input { max-width: 320px; }
+
+/* Settings */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 880px; }
+details summary { cursor: pointer; font-weight: 600; margin-bottom: 12px; }
+
+/* Dialog & toast */
+dialog { border: 1px solid var(--line); border-radius: 14px; padding: 0; background: var(--panel); color: var(--text); width: min(460px, 92vw); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+dialog::backdrop { background: rgba(10,14,20,.45); backdrop-filter: blur(2px); }
+.dlg-body { padding: 20px 22px 8px; }
+.dlg-body h2 { margin: 0 0 6px; font-size: 17px; }
+.dlg-body p { margin: 0 0 12px; color: var(--muted); }
+.dlg-body img { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: #fff; image-rendering: pixelated; margin-bottom: 10px; }
+.dlg-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px 18px; }
+.toasts { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 50; }
+.toast { background: var(--text); color: var(--bg); padding: 10px 14px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); display: flex; gap: 10px; align-items: center; max-width: 420px; animation: pop .18s ease-out; }
+@keyframes pop { from { transform: translateY(8px); opacity: 0; } }
+.hidden { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+@media (max-width: 1100px) { .create { grid-template-columns: 1fr; } .preview-card { position: static; } }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; flex-direction: row; flex-wrap: wrap; padding: 10px; }
+  .brand { padding: 4px 8px; } .rail-foot { display: none; }
+  main { padding: 16px; } .kind-grid { grid-template-columns: 1fr; } .settings-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1"/></symbol>
+  <symbol id="i-usb" viewBox="0 0 24 24"><rect x="7" y="9" width="10" height="13" rx="2"/><path d="M9 9V3h6v6M10.5 5.5h0M13.5 5.5h0"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-queue" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h0M3 12h0M3 18h0"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h0"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></symbol>
+</svg>
+
+<div class="app" id="app">
+  <nav class="rail" aria-label="Main">
+    <div class="brand"><div class="logo"><svg class="i"><use href="#i-bag"/></svg></div>Lab Labels</div>
+    <button class="nav" data-view="create" aria-current="page"><svg class="i"><use href="#i-pencil"/></svg>Create</button>
+    <button class="nav" data-view="queue"><svg class="i"><use href="#i-queue"/></svg>Queue<span class="badge" id="queue-count">0</span></button>
+    <button class="nav" data-view="history"><svg class="i"><use href="#i-clock"/></svg>History</button>
+    <button class="nav" data-view="settings"><svg class="i"><use href="#i-gear"/></svg>Settings</button>
+    <div class="rail-foot">
+      <button class="printer-pill" id="printer-pill" title="Check printer connection"><span class="dot" id="printer-dot"></span><span id="printer-text">Printer</span></button>
+      <button class="btn ghost" id="theme-btn" title="Toggle light / dark"><svg class="i"><use href="#i-moon"/></svg>Theme</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="dry-banner"><svg class="i"><use href="#i-alert"/></svg>Dry-run mode: nothing will be sent to the printer. ZPL is written to local/dry-run/.</div>
+
+    <!-- CREATE -->
+    <section id="view-create">
+      <div class="page-head">
+        <h1>Create label</h1><span class="sub" id="reprint-tag"></span>
+        <div class="spacer"></div>
+        <span class="hint"><span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> print · <span class="kbd">Ctrl</span>+<span class="kbd">S</span> queue</span>
+      </div>
+      <div class="create">
+        <div class="card">
+          <div class="card-pad">
+            <div class="kind-grid" role="group" aria-label="Label type" id="kinds"></div>
+
+            <div id="general-editor">
+              <div class="field">
+                <label for="heading">Heading</label>
+                <input class="input big" id="heading" autocomplete="off" placeholder="ROBOT CAR KIT">
+                <span class="hint">The prominent first line. Long headings shrink to fit; nothing is cropped.</span>
+              </div>
+              <div class="field">
+                <span class="label">Details</span>
+                <div class="rows" id="detail-rows"></div>
+                <div><button class="btn ghost" id="add-detail"><svg class="i"><use href="#i-plus"/></svg>Add detail line</button></div>
+                <span class="hint">Details share one smaller size. Use slashes between parallel items, no em-dashes.</span>
+              </div>
+            </div>
+
+            <div id="usb-editor" class="hidden">
+              <div class="field">
+                <span class="label">Strips per sheet</span>
+                <div class="inline">
+                  <div class="seg" id="rows-seg" role="group" aria-label="Strips per sheet"></div>
+                  <span class="hint" id="strip-height"></span>
+                </div>
+              </div>
+              <div class="field">
+                <span class="label">Strip names <span class="hint">(top to bottom; empty rows print blank)</span></span>
+                <div class="rows" id="usb-rows"></div>
+              </div>
+              <div class="field">
+                <label for="length">Trim length</label>
+                <div class="range"><input type="range" id="length" min="15" max="55" step="1"><div class="value-box" id="length-val"></div></div>
+                <span class="hint"><svg class="i" style="width:13px;height:13px;vertical-align:-2px"><use href="#i-scissors"/></svg> Short marks show where to cut. Trimming is manual.</span>
+              </div>
+              <div class="field">
+                <span class="label">Text size</span>
+                <div class="inline">
+                  <div class="seg" id="size-mode" role="group" aria-label="Text size mode">
+                    <button data-mode="auto">Auto-fit</button><button data-mode="fixed">Fixed</button>
+                  </div>
+                  <div class="chips" id="size-chips"></div>
+                </div>
+                <div class="range" id="size-range"><input type="range" id="font-px" min="10" max="120" step="1"><div class="value-box" id="font-px-val"></div></div>
+                <span class="hint" id="size-hint"></span>
+              </div>
+            </div>
+
+            <div class="field" style="margin-bottom:0">
+              <span class="label">Copies</span>
+              <div class="inline">
+                <div class="stepper"><button id="copies-dec" aria-label="Fewer copies">−</button><input id="copies" inputmode="numeric" aria-label="Copies"><button id="copies-inc" aria-label="More copies">+</button></div>
+                <span class="hint" id="copies-hint"></span>
+              </div>
+            </div>
+          </div>
+          <div class="editor-foot">
+            <button class="btn" id="queue-btn"><svg class="i"><use href="#i-save"/></svg>Add to queue</button>
+            <div class="spacer"></div>
+            <button class="btn ghost" id="clear-btn"><svg class="i"><use href="#i-x"/></svg>Clear</button>
+          </div>
+        </div>
+
+        <div class="card preview-card">
+          <div class="stage">
+            <div class="zoom"><div class="seg" id="zoom-seg"><button data-zoom="fit">Fit</button><button data-zoom="1">1×</button><button data-zoom="2">2×</button></div></div>
+            <div class="paper empty" id="paper"><span>Start typing to see the label</span></div>
+            <div class="dims">57.2 × 31.8 mm · 456 × 253 dots</div>
+          </div>
+          <div class="preview-body">
+            <div class="status-line" id="status-line"><span class="dot"></span><span>Waiting for text</span></div>
+            <div class="metrics" id="metrics"></div>
+            <div class="notes" id="notes"></div>
+            <div class="print-row">
+              <button class="btn primary lg" id="print-btn" disabled><svg class="i"><use href="#i-printer"/></svg><span>Print</span></button>
+              <div class="target" id="print-target"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUEUE -->
+    <section id="view-queue" class="hidden">
+      <div class="page-head"><h1>Queue</h1><span class="sub">Saved drafts waiting to print. Stored on this computer.</span></div>
+      <div class="card"><div class="list" id="queue-list"></div></div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="view-history" class="hidden">
+      <div class="page-head"><h1>History</h1><span class="sub">Every send attempt. A sent job is not proof it printed; confirm it.</span></div>
+      <div class="toolbar"><input class="input" id="history-search" placeholder="Search labels…" type="search"></div>
+      <div class="card"><div class="list" id="history-list"></div></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="hidden">
+      <div class="page-head"><h1>Settings</h1></div>
+      <div class="settings-grid">
+        <div class="card card-pad">
+          <p class="section-title">Printer</p>
+          <div class="field"><label for="set-host">Host</label><input class="input mono" id="set-host"></div>
+          <div class="field"><label for="set-port">Port</label><input class="input mono" id="set-port" inputmode="numeric"></div>
+          <details>
+            <summary>Calibration (advanced)</summary>
+            <div class="field"><label for="set-offset">Vertical offset (mm)</label><input class="input mono" id="set-offset" inputmode="decimal">
+              <span class="hint">Calibrated value is +5 mm (^LT40). Change only if labels print misaligned.</span></div>
+          </details>
+          <div class="inline"><button class="btn primary" id="save-settings">Save</button><button class="btn" id="check-printer">Test connection</button></div>
+          <div class="notes" id="settings-notes" style="margin-top:12px"></div>
+        </div>
+        <div class="card card-pad">
+          <p class="section-title">Media</p>
+          <p style="margin-top:0">Zebra GX420d · 2.25 × 1.25 in (57.2 × 31.8 mm) · 456 × 253 dots at 203 dpi · margin 8 dots · no border.</p>
+          <p class="hint">The preview is the exact raster that will be sent. The physical +5 mm offset is applied by the printer, so it does not appear in the preview.</p>
+          <p class="section-title" style="margin-top:20px">Appearance</p>
+          <div class="seg" id="theme-seg"><button data-theme="system">System</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog">
+    <div class="dlg-body"><h2 id="dlg-title"></h2><p id="dlg-text"></p><img id="dlg-img" alt="" class="hidden"></div>
+    <div class="dlg-foot"><button class="btn" value="cancel">Cancel</button><button class="btn primary" value="ok" id="dlg-ok">OK</button></div>
+  </form>
+</dialog>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const icon = n => `<svg class="i"><use href="#i-${n}"/></svg>`;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const KIND_ICON = {box: "box", bag: "bag", usb: "usb"};
+const SIZE_PRESETS = [["Small", 24], ["Medium", 32], ["Large", 44]];
+
+async function api(path, body) {
+  const opts = body === undefined ? {} : {method: "POST", headers: {"Content-Type": "application/json", "X-Lab-Labels": "1"}, body: JSON.stringify(body)};
+  const res = await fetch(path, opts);
+  const data = await res.json().catch(() => ({error: "Bad response"}));
+  if (!res.ok) { const e = new Error(data.error || res.statusText); e.status = res.status; e.code = data.code; throw e; }
+  return data;
+}
+
+// ---------- state ----------
+let config = null;
+const S = {
+  kind: "box",
+  drafts: {
+    box: {heading: "", details: [""], copies: 2},
+    bag: {heading: "", details: [""], copies: 1},
+    usb: {names: ["", "", ""], rows: 3, length_mm: 40, font_px: null, last_px: 28, copies: 1},
+  },
+  queue: [],
+  zoom: "fit",
+  origin: null, // {queueId} or {reprintOf}
+};
+let preview = null;        // last good preview response
+let previewFor = "";       // JSON of the job it was rendered from
+let previewErr = null;
+let seq = 0;
+let printing = false;
+let history = [];
+
+const draft = () => S.drafts[S.kind];
+function currentJob() {
+  const d = draft();
+  if (S.kind === "usb") return {kind: "usb", names: d.names.slice(0, d.rows), rows: d.rows, length_mm: d.length_mm, font_px: d.font_px, copies: d.copies};
+  return {kind: S.kind, lines: [d.heading, ...d.details], copies: d.copies};
+}
+function jobFromHistory(job) {
+  if (job.kind === "usb") {
+    const names = [...job.names]; while (names.length < job.rows) names.push("");
+    return {names, rows: job.rows, length_mm: job.length_mm, font_px: job.font_px, last_px: job.font_px || 28, copies: job.copies};
+  }
+  return {heading: job.lines[0] || "", details: job.lines.slice(1).length ? job.lines.slice(1) : [""], copies: job.copies};
+}
+function titleOf(job) {
+  const t = job.kind === "usb" ? job.names.filter(Boolean) : job.lines.filter(Boolean);
+  return t.slice(0, 3).join(" / ") || "(blank)";
+}
+
+let saveTimer;
+function persist() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => api("/api/state", {kind: S.kind, drafts: S.drafts, queue: S.queue, zoom: S.zoom}).catch(() => {}), 400);
+}
+
+// ---------- rendering the editor ----------
+function renderKinds() {
+  $("#kinds").innerHTML = Object.entries(config.kinds).map(([k, v], i) =>
+    `<button class="kind" data-kind="${k}" aria-pressed="${k === S.kind}" title="Alt+${i + 1}">
+      <div class="ic">${icon(KIND_ICON[k])}</div><div><b>${esc(v.title)}</b><span>${esc(v.hint)}</span></div></button>`).join("");
+}
+
+function rowHTML(i, value, opts) {
+  const {placeholder, count, blankable} = opts;
+  return `<div class="row ${blankable && !value ? "blank" : ""}" data-i="${i}">
+    <div class="num">${i + 1}</div>
+    <input class="input" value="${esc(value)}" placeholder="${esc(placeholder)}" aria-label="Line ${i + 1}" autocomplete="off">
+    <div class="tools">
+      <button class="btn icon ghost" data-act="up" title="Move up" ${i === 0 ? "disabled" : ""}>${icon("up")}</button>
+      <button class="btn icon ghost" data-act="down" title="Move down" ${i === count - 1 ? "disabled" : ""}>${icon("down")}</button>
+      <button class="btn icon ghost" data-act="del" title="${blankable ? "Clear" : "Remove"}">${icon("x")}</button>
+    </div></div>`;
+}
+
+function renderEditor() {
+  renderKinds();
+  const d = draft();
+  const usb = S.kind === "usb";
+  $("#general-editor").classList.toggle("hidden", usb);
+  $("#usb-editor").classList.toggle("hidden", !usb);
+  if (!usb) {
+    if ($("#heading").value !== d.heading) $("#heading").value = d.heading;
+    $("#heading").placeholder = S.kind === "box" ? "ROBOT CAR KIT" : "ESP32 DEVKIT V1";
+    const ph = S.kind === "box" ? ["READY TO BUILD", "MOTORS / WHEELS / DRIVER"] : ["WIFI + BLUETOOTH MICROCONTROLLER", "SENSOR / IOT PROJECTS"];
+    $("#detail-rows").innerHTML = d.details.map((v, i) => rowHTML(i, v, {placeholder: ph[i] || "Detail", count: d.details.length})).join("");
+    $("#add-detail").disabled = d.details.length >= 5;
+  } else {
+    $("#rows-seg").innerHTML = config.rows.map(r => `<button data-rows="${r}" aria-pressed="${r === d.rows}">${r} strips</button>`).join("");
+    $("#strip-height").textContent = `Each strip about ${(31.6 / d.rows).toFixed(1)} mm tall`;
+    const ph = ["UBUNTU SRV 26.04", "EMPTY 32GB", "PROXMOX VE 9.1", "WINPE UTIL"];
+    $("#usb-rows").innerHTML = d.names.slice(0, d.rows).map((v, i) => rowHTML(i, v, {placeholder: ph[i], count: d.rows, blankable: true})).join("");
+    $("#length").value = d.length_mm; $("#length-val").textContent = `${d.length_mm} mm`;
+    const fixed = d.font_px !== null;
+    $$("#size-mode button").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.mode === "fixed") === fixed)));
+    $("#size-range").classList.toggle("hidden", !fixed);
+    $("#size-chips").classList.toggle("hidden", !fixed);
+    $("#size-chips").innerHTML = SIZE_PRESETS.map(([n, px]) => `<button class="chip" data-px="${px}">${n}</button>`).join("");
+    $("#font-px").min = config.font_px_range[0]; $("#font-px").max = config.font_px_range[1];
+    $("#font-px").value = d.font_px ?? d.last_px; $("#font-px-val").textContent = `${d.font_px ?? d.last_px} px`;
+    $("#size-hint").textContent = fixed
+      ? "Text stays at this size and is never enlarged. If it does not fit you will be told."
+      : "Each name grows to fill its strip. Choose Fixed for modest text like 32GB.";
+  }
+  $("#copies").value = d.copies;
+  $("#copies-hint").textContent = S.kind === "box" ? "Two by default: lid and side." : S.kind === "usb" ? "Each copy is one full sheet." : "One by default.";
+  $("#reprint-tag").innerHTML = S.origin?.reprintOf ? `<span class="badge accent">${icon("redo")} Reprint</span>` : S.origin?.queueId ? `<span class="badge">From queue</span>` : "";
+  $("#queue-count").textContent = S.queue.length;
+  schedulePreview();
+}
+
+// ---------- preview ----------
+let pvTimer;
+function schedulePreview() {
+  clearTimeout(pvTimer);
+  $("#paper").classList.add("stale");
+  updatePrintState();
+  pvTimer = setTimeout(runPreview, 160);
+}
+
+function isEmptyJob(job) {
+  return job.kind === "usb" ? !job.names.some(n => n.trim()) : !job.lines.some(l => l.trim());
+}
+
+async function runPreview() {
+  const job = currentJob();
+  const key = JSON.stringify(job);
+  const mine = ++seq;
+  if (isEmptyJob(job)) {
+    preview = null; previewErr = null; previewFor = key;
+    $("#paper").className = "paper empty";
+    $("#paper").innerHTML = `<span>Start typing to see the label</span>`;
+    $("#metrics").innerHTML = ""; $("#notes").innerHTML = "";
+    setStatus("", "Waiting for text");
+    return updatePrintState();
+  }
+  setStatus("warn", "Rendering…");
+  try {
+    const r = await api("/api/preview", job);
+    if (mine !== seq) return;
+    preview = r; previewErr = null; previewFor = key;
+    const paper = $("#paper");
+    paper.className = "paper";
+    paper.innerHTML = `<img alt="Label preview" src="data:image/png;base64,${r.png}">`;
+    applyZoom();
+    $("#metrics").innerHTML = r.metrics.map(m => m.height_mm == null
+      ? `<span class="metric">#${m.row} blank</span>`
+      : `<span class="metric ${m.height_mm < 2.5 ? "small" : ""}" title="${esc(m.text)}">#${m.row} ${m.height_mm} mm tall</span>`).join("");
+    $("#notes").innerHTML = r.warnings.map(w => `<div class="note warn">${icon("alert")}<span>${esc(w)}</span></div>`).join("");
+    setStatus("ok", "Preview matches what will print", r.summary);
+  } catch (e) {
+    if (mine !== seq) return;
+    preview = null; previewErr = e.message; previewFor = key;
+    $("#paper").classList.add("stale");
+    $("#metrics").innerHTML = "";
+    $("#notes").innerHTML = `<div class="note bad">${icon("alert")}<span>${esc(e.message)}</span></div>`;
+    setStatus("bad", "Cannot render this label");
+  }
+  updatePrintState();
+}
+
+function setStatus(cls, text, sum = "") {
+  $("#status-line").innerHTML = `<span class="dot ${cls}"></span><span>${esc(text)}</span>${sum ? `<span class="sum">· ${esc(sum)}</span>` : ""}`;
+}
+
+function fresh() { return preview && !previewErr && previewFor === JSON.stringify(currentJob()); }
+
+function updatePrintState() {
+  const d = draft();
+  const btn = $("#print-btn");
+  btn.disabled = !fresh() || printing;
+  const n = d.copies;
+  const what = S.kind === "usb" ? (n === 1 ? "1 sheet" : `${n} sheets`) : (n === 1 ? "1 label" : `${n} labels`);
+  $("span", btn).textContent = printing ? "Sending…" : `Print ${what}`;
+  const s = config?.settings;
+  $("#print-target").textContent = config?.dry_run ? "Dry run: writes ZPL only" : s ? `to ${s.host}:${s.port}` : "";
+}
+
+function applyZoom() {
+  $$("#zoom-seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.zoom === S.zoom)));
+  const img = $("#paper img"); if (!img) return;
+  img.style.maxWidth = S.zoom === "fit" ? "100%" : "none";
+  img.style.width = S.zoom === "fit" ? "" : `${456 * Number(S.zoom)}px`;
+}
+
+// ---------- printing ----------
+function confirmDialog({title, text, img, ok = "OK", danger = false}) {
+  const dlg = $("#dlg");
+  $("#dlg-title").textContent = title; $("#dlg-text").textContent = text;
+  $("#dlg-img").classList.toggle("hidden", !img); if (img) $("#dlg-img").src = img;
+  $("#dlg-ok").textContent = ok; $("#dlg-ok").classList.toggle("danger", danger);
+  dlg.returnValue = "";
+  dlg.showModal(); $("#dlg-ok").focus();
+  return new Promise(res => dlg.addEventListener("close", () => res(dlg.returnValue === "ok"), {once: true}));
+}
+
+async function doPrint() {
+  if (!fresh() || printing) return;
+  const job = currentJob(), pv = preview;
+  const s = config.settings;
+  const ok = await confirmDialog({
+    title: config.dry_run ? "Dry-run this label?" : "Send to printer?",
+    text: `${titleOf(job)} · ${pv.summary}${config.dry_run ? "" : ` → ${s.host}:${s.port}`}`,
+    img: `data:image/png;base64,${pv.png}`, ok: config.dry_run ? "Write ZPL" : "Print"});
+  if (!ok) return;
+  await sendPrint({job, fingerprint: pv.fingerprint, reprint_of: S.origin?.reprintOf || null});
+}
+
+async function sendPrint(body) {
+  printing = true; updatePrintState();
+  try {
+    let entry;
+    try { entry = await api("/api/print", body); }
+    catch (e) {
+      if (e.code === "repeat" && await confirmDialog({title: "Send again?", text: e.message, ok: "Send again"})) {
+        entry = await api("/api/print", {...body, confirm_repeat: true});
+      } else if (e.code === "stale") { toast(e.message, "alert"); schedulePreview(); return; }
+      else if (e.code === "repeat") return;
+      else throw e;
+    }
+    reportOutcome(entry);
+    if (["sent", "dry-run", "unknown"].includes(entry.status) && S.origin?.queueId) {
+      S.queue = S.queue.filter(q => q.id !== S.origin.queueId);
+      S.origin = null; persist(); renderEditor();
+    }
+    loadHistory();
+  } catch (e) { toast(e.message, "alert"); }
+  finally { printing = false; updatePrintState(); }
+}
+
+function reportOutcome(entry) {
+  const msg = {
+    "sent": ["Sent. Check the printer, then confirm it in History.", "check"],
+    "dry-run": ["Dry run: ZPL written, nothing sent.", "check"],
+    "failed": [`Not sent: ${entry.error}`, "alert"],
+    "unknown": [`Outcome unknown: ${entry.error}`, "alert"],
+  }[entry.status] || [entry.status, "alert"];
+  toast(...msg);
+}
+
+function toast(text, ic = "check") {
+  const t = document.createElement("div");
+  t.className = "toast"; t.innerHTML = `${icon(ic)}<span>${esc(text)}</span>`;
+  $("#toasts").append(t); setTimeout(() => t.remove(), 5200);
+}
+
+// ---------- queue ----------
+function addToQueue() {
+  const job = currentJob();
+  if (isEmptyJob(job)) return toast("Nothing to queue yet.", "alert");
+  if (S.origin?.queueId) {
+    const q = S.queue.find(x => x.id === S.origin.queueId);
+    if (q) { q.job = job; q.updated = new Date().toISOString(); persist(); renderQueue(); renderEditor(); return toast("Queue item updated."); }
+  }
+  S.queue.push({id: Math.random().toString(36).slice(2, 10), job, created: new Date().toISOString()});
+  persist(); toast(`Queued "${titleOf(job)}".`); clearDraft(); renderQueue();
+}
+
+function clearDraft() {
+  const k = S.kind;
+  S.drafts[k] = k === "usb" ? {...S.drafts.usb, names: Array(S.drafts.usb.rows).fill("")}
+    : {heading: "", details: [""], copies: config.kinds[k].copies};
+  S.origin = null; persist(); renderEditor();
+}
+
+function openJob(job, origin) {
+  S.kind = job.kind; S.drafts[job.kind] = jobFromHistory(job); S.origin = origin;
+  persist(); show("create"); renderEditor();
+}
+
+function emptyState(ic, title, text) {
+  return `<div class="empty-state"><div class="ic">${icon(ic)}</div><h3>${esc(title)}</h3><div>${esc(text)}</div></div>`;
+}
+
+function renderQueue() {
+  $("#queue-count").textContent = S.queue.length;
+  $("#queue-list").innerHTML = S.queue.length ? S.queue.map(q => `
+    <div class="item" data-id="${q.id}">
+      <div class="ic">${icon(KIND_ICON[q.job.kind])}</div>
+      <div style="min-width:0"><div class="title">${esc(titleOf(q.job))}</div>
+        <div class="meta"><span class="badge">${esc(config.kinds[q.job.kind].title)}</span><span>${q.job.copies} cop${q.job.copies === 1 ? "y" : "ies"}</span><span>queued ${esc(ago(q.created))}</span></div></div>
+      <div class="acts"><button class="btn primary" data-act="open">${icon("pencil")}Open</button><button class="btn icon ghost" data-act="del" title="Remove">${icon("trash")}</button></div>
+    </div>`).join("") : emptyState("queue", "Queue is empty", "Use Add to queue (Ctrl+S) to save a label for later. Drafts survive restarts.");
+}
+
+// ---------- history ----------
+const STATUS = {
+  "sent": ["ok", "Sent"], "dry-run": ["accent", "Dry run"], "failed": ["bad", "Failed"],
+  "unknown": ["warn", "Outcome unknown"], "sending": ["warn", "Interrupted"],
+};
+async function loadHistory() { try { history = await api("/api/history"); renderHistory(); } catch {} }
+function renderHistory() {
+  const q = $("#history-search").value.trim().toLowerCase();
+  const rows = history.filter(h => !q || (h.title + " " + h.summary).toLowerCase().includes(q));
+  $("#history-list").innerHTML = rows.length ? rows.map(h => {
+    const [cls, label] = STATUS[h.status] || ["", h.status];
+    const phys = h.physical === true ? `<span class="badge ok">${icon("check")}Printed OK</span>`
+      : h.physical === false ? `<span class="badge bad">Problem</span>`
+      : h.status === "sent" || h.status === "unknown" ? `<button class="btn ghost" data-act="ok" title="Label came out correctly">${icon("check")}Printed OK</button><button class="btn ghost" data-act="bad" title="Missing or misprinted">Problem</button>` : "";
+    return `<div class="item" data-id="${h.id}">
+      <div class="ic">${icon(KIND_ICON[h.job.kind])}</div>
+      <div style="min-width:0"><div class="title">${esc(h.title)}</div>
+        <div class="meta"><span class="badge ${cls}">${esc(label)}</span>${h.reprint_of ? `<span class="badge">Reprint</span>` : ""}<span>${esc(h.summary)}</span><span>${esc(new Date(h.created).toLocaleString())}</span><span>${esc(h.host)}</span>${h.error ? `<span style="color:var(--bad)">${esc(h.error)}</span>` : ""}</div></div>
+      <div class="acts">${phys}<button class="btn" data-act="reprint">${icon("redo")}Reprint</button><button class="btn ghost" data-act="edit">${icon("pencil")}Edit copy</button></div>
+    </div>`;
+  }).join("") : emptyState("clock", q ? "No matches" : "No print history yet", q ? "Try a different search." : "Every send attempt, including failures, appears here.");
+}
+
+function ago(iso) {
+  const s = (Date.now() - new Date(iso)) / 1000;
+  if (s < 60) return "just now"; if (s < 3600) return `${Math.round(s / 60)} min ago`;
+  if (s < 86400) return `${Math.round(s / 3600)} h ago`; return new Date(iso).toLocaleDateString();
+}
+
+// ---------- settings & printer ----------
+function fillSettings() {
+  const s = config.settings;
+  $("#set-host").value = s.host; $("#set-port").value = s.port; $("#set-offset").value = s.offset_mm;
+  $("#printer-text").textContent = config.dry_run ? "Dry run" : `${s.host}`;
+}
+async function checkPrinter(showNote) {
+  $("#printer-dot").className = "dot warn";
+  try {
+    const r = await api("/api/printer-check", {});
+    $("#printer-dot").className = `dot ${r.ok ? "ok" : "bad"}`;
+    $("#printer-pill").title = r.message;
+    if (showNote) $("#settings-notes").innerHTML = `<div class="note ${r.ok ? "ok" : "bad"}">${icon(r.ok ? "check" : "alert")}<span>${esc(r.message)}</span></div>`;
+    return r;
+  } catch (e) { $("#printer-dot").className = "dot bad"; }
+}
+
+// ---------- theme ----------
+function setTheme(t) {
+  try { localStorage.setItem("lab-labels-theme", t); } catch {}
+  if (t === "system") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.dataset.theme = t;
+  $$("#theme-seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.theme === t)));
+}
+function currentTheme() { try { return localStorage.getItem("lab-labels-theme") || "system"; } catch { return "system"; } }
+
+// ---------- navigation ----------
+function show(view) {
+  ["create", "queue", "history", "settings"].forEach(v => $(`#view-${v}`).classList.toggle("hidden", v !== view));
+  $$(".nav").forEach(n => n.setAttribute("aria-current", n.dataset.view === view ? "page" : "false"));
+  if (view === "history") loadHistory();
+  if (view === "queue") renderQueue();
+  if (view === "create") setTimeout(() => (S.kind === "usb" ? $("#usb-rows input") : $("#heading"))?.focus(), 0);
+}
+
+// ---------- events ----------
+function bind() {
+  $$(".nav").forEach(n => n.addEventListener("click", () => show(n.dataset.view)));
+  $("#kinds").addEventListener("click", e => {
+    const b = e.target.closest("[data-kind]"); if (!b) return;
+    S.kind = b.dataset.kind; S.origin = null; persist(); renderEditor(); show("create");
+  });
+  $("#heading").addEventListener("input", e => { draft().heading = e.target.value; persist(); schedulePreview(); });
+
+  function rowsHandler(container, getList, setList, blankable) {
+    container.addEventListener("input", e => {
+      const row = e.target.closest(".row"); if (!row) return;
+      const list = getList(); list[+row.dataset.i] = e.target.value;
+      row.classList.toggle("blank", blankable && !e.target.value);
+      persist(); schedulePreview();
+    });
+    container.addEventListener("keydown", e => {
+      const row = e.target.closest(".row"); if (!row || e.target.tagName !== "INPUT") return;
+      const i = +row.dataset.i;
+      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const next = container.querySelector(`.row[data-i="${i + 1}"] input`);
+        if (next) next.focus();
+        else if (!blankable && getList().length < 5) { getList().push(""); renderEditor(); container.querySelector(`.row[data-i="${i + 1}"] input`)?.focus(); }
+      }
+      if (e.key === "Backspace" && !e.target.value && !blankable && getList().length > 1) {
+        e.preventDefault(); getList().splice(i, 1); persist(); renderEditor();
+        (container.querySelector(`.row[data-i="${Math.max(0, i - 1)}"] input`) || $("#heading")).focus();
+      }
+    });
+    container.addEventListener("click", e => {
+      const b = e.target.closest("[data-act]"); if (!b) return;
+      const i = +b.closest(".row").dataset.i; const list = getList();
+      if (b.dataset.act === "up" && i > 0) [list[i - 1], list[i]] = [list[i], list[i - 1]];
+      if (b.dataset.act === "down" && i < list.length - 1) [list[i + 1], list[i]] = [list[i], list[i + 1]];
+      if (b.dataset.act === "del") { if (blankable || list.length === 1) list[i] = ""; else list.splice(i, 1); }
+      setList(list); persist(); renderEditor();
+    });
+  }
+  rowsHandler($("#detail-rows"), () => draft().details, l => draft().details = l, false);
+  rowsHandler($("#usb-rows"), () => draft().names, l => draft().names = l, true);
+  $("#add-detail").addEventListener("click", () => { draft().details.push(""); persist(); renderEditor(); $$("#detail-rows input").at(-1).focus(); });
+
+  $("#rows-seg").addEventListener("click", e => {
+    const b = e.target.closest("[data-rows]"); if (!b) return;
+    const d = draft(); d.rows = +b.dataset.rows;
+    while (d.names.length < d.rows) d.names.push("");
+    const dropped = d.names.slice(d.rows).filter(Boolean);
+    if (dropped.length) toast(`Hidden rows kept: ${dropped.join(", ")}. Switch back to see them.`, "alert");
+    persist(); renderEditor();
+  });
+  $("#length").addEventListener("input", e => { draft().length_mm = +e.target.value; $("#length-val").textContent = `${e.target.value} mm`; persist(); schedulePreview(); });
+  $("#size-mode").addEventListener("click", e => {
+    const b = e.target.closest("[data-mode]"); if (!b) return;
+    const d = draft(); d.font_px = b.dataset.mode === "fixed" ? d.last_px : null; persist(); renderEditor();
+  });
+  const setPx = px => { const d = draft(); d.font_px = d.last_px = px; $("#font-px").value = px; $("#font-px-val").textContent = `${px} px`; persist(); schedulePreview(); };
+  $("#font-px").addEventListener("input", e => setPx(+e.target.value));
+  $("#size-chips").addEventListener("click", e => { const b = e.target.closest("[data-px]"); if (b) setPx(+b.dataset.px); });
+
+  const setCopies = n => { n = Math.max(1, Math.min(100, n | 0 || 1)); draft().copies = n; $("#copies").value = n; persist(); schedulePreview(); };
+  $("#copies-dec").addEventListener("click", () => setCopies(draft().copies - 1));
+  $("#copies-inc").addEventListener("click", () => setCopies(draft().copies + 1));
+  $("#copies").addEventListener("change", e => setCopies(+e.target.value));
+
+  $("#zoom-seg").addEventListener("click", e => { const b = e.target.closest("[data-zoom]"); if (!b) return; S.zoom = b.dataset.zoom; applyZoom(); persist(); });
+  $("#print-btn").addEventListener("click", doPrint);
+  $("#queue-btn").addEventListener("click", addToQueue);
+  $("#clear-btn").addEventListener("click", clearDraft);
+
+  $("#queue-list").addEventListener("click", async e => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const id = b.closest(".item").dataset.id; const q = S.queue.find(x => x.id === id);
+    if (b.dataset.act === "open") openJob(q.job, {queueId: id});
+    if (b.dataset.act === "del" && await confirmDialog({title: "Remove from queue?", text: titleOf(q.job), ok: "Remove", danger: true})) {
+      S.queue = S.queue.filter(x => x.id !== id); persist(); renderQueue();
+    }
+  });
+  $("#history-search").addEventListener("input", renderHistory);
+  $("#history-list").addEventListener("click", async e => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const h = history.find(x => x.id === b.closest(".item").dataset.id);
+    if (b.dataset.act === "edit") openJob(h.job, null);
+    if (b.dataset.act === "reprint") openJob(h.job, {reprintOf: h.id});
+    if (b.dataset.act === "ok" || b.dataset.act === "bad") {
+      await api("/api/history/confirm", {id: h.id, physical: b.dataset.act === "ok"}); loadHistory();
+    }
+  });
+
+  $("#save-settings").addEventListener("click", async () => {
+    try {
+      config.settings = await api("/api/settings", {host: $("#set-host").value, port: +$("#set-port").value, offset_mm: +$("#set-offset").value});
+      fillSettings(); updatePrintState(); schedulePreview();
+      $("#settings-notes").innerHTML = `<div class="note ok">${icon("check")}<span>Saved.</span></div>`;
+      checkPrinter(false);
+    } catch (e) { $("#settings-notes").innerHTML = `<div class="note bad">${icon("alert")}<span>${esc(e.message)}</span></div>`; }
+  });
+  $("#check-printer").addEventListener("click", () => checkPrinter(true));
+  $("#printer-pill").addEventListener("click", async () => { const r = await checkPrinter(false); if (r) toast(r.message, r.ok ? "check" : "alert"); });
+  $("#theme-btn").addEventListener("click", () => setTheme(({system: "dark", dark: "light", light: "system"})[currentTheme()]));
+  $("#theme-seg").addEventListener("click", e => { const b = e.target.closest("[data-theme]"); if (b) setTheme(b.dataset.theme); });
+
+  document.addEventListener("keydown", e => {
+    if ($("#dlg").open) return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === "Enter") { e.preventDefault(); show("create"); doPrint(); }
+    if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); addToQueue(); }
+    if (e.altKey && ["1", "2", "3"].includes(e.key)) { e.preventDefault(); S.kind = Object.keys(config.kinds)[+e.key - 1]; S.origin = null; persist(); show("create"); renderEditor(); }
+  });
+}
+
+// ---------- boot ----------
+(async function boot() {
+  setTheme(currentTheme());
+  config = await api("/api/config");
+  document.body.classList.toggle("dry", config.dry_run);
+  const saved = await api("/api/state").catch(() => ({}));
+  if (saved.drafts) for (const k of Object.keys(S.drafts)) if (saved.drafts[k]) S.drafts[k] = {...S.drafts[k], ...saved.drafts[k]};
+  if (saved.kind in S.drafts) S.kind = saved.kind;
+  if (Array.isArray(saved.queue)) S.queue = saved.queue;
+  if (saved.zoom) S.zoom = saved.zoom;
+  fillSettings(); bind(); renderEditor(); renderQueue(); show("create");
+  checkPrinter(false); loadHistory();
+})();
+</script>
+</body>
+</html>

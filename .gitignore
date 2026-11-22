@@ -20,3 +20,6 @@ Inventory/
 component-labels-*.json
 *-label-sends-*.jsonl
 local/
+
+# Personal Claude Code settings
+.claude/settings.local.json
