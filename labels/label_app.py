@@ -11,6 +11,7 @@ import argparse
 import base64
 from datetime import datetime, timezone
 import hashlib
+import importlib.util
 import io
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -18,6 +19,8 @@ import json
 from pathlib import Path
 import socket
 import threading
+import time
+from urllib.parse import parse_qs, urlparse
 import uuid
 import webbrowser
 
@@ -30,6 +33,78 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = Path(__file__).resolve().parent / "web"
+PHOTO_NAME_MAX = 200
+
+
+def load_photos_module():
+    """lab-photos/photos.py is a script, not a package; load it by path."""
+    spec = importlib.util.spec_from_file_location("lab_photos", ROOT / "lab-photos" / "photos.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class PhotoInbox:
+    """Read-only view of the temporary phone-photo inbox for the UI.
+
+    Photos are disposable evidence: thumbnails and full copies live only in the
+    bounded lab-photos/cache/ and are never copied into history or Git.
+    """
+
+    def __init__(self, photos=None, thumbs=None):
+        self._photos = photos
+        self.lock = threading.Lock()
+        self._rows, self._rows_at = [], 0.0
+        self._thumbs = thumbs
+
+    @property
+    def photos(self):
+        if self._photos is None:
+            self._photos = load_photos_module()
+        return self._photos
+
+    @property
+    def thumbs(self):
+        if self._thumbs is None:
+            self._thumbs = Path(self.photos.CACHE) / "thumbs"
+        return Path(self._thumbs)
+
+    def rows(self, max_age=3.0):
+        with self.lock:
+            if time.monotonic() - self._rows_at > max_age:
+                self._rows, self._rows_at = self.photos.list_rows(), time.monotonic()
+            return self._rows
+
+    def listing(self, limit=24):
+        return [{k: r[k] for k in ("name", "bytes", "arrived")} for r in self.rows()[:limit]]
+
+    def _row(self, name):
+        if not isinstance(name, str) or len(name) > PHOTO_NAME_MAX:
+            raise ValueError("Bad photo name.")
+        row = next((r for r in self.rows(max_age=30) if r["name"] == name), None)
+        if row is None:
+            raise ValueError("That photo is no longer in the inbox (photos are temporary).")
+        return row
+
+    def image(self, name, size):
+        """JPEG bytes scaled so the long side is at most ``size`` pixels."""
+        from PIL import Image, ImageOps
+        row = self._row(name)
+        key = hashlib.sha1(f"{name}:{row['bytes']}:{size}".encode()).hexdigest()[:16]
+        out = self.thumbs / f"{key}.jpg"
+        if not out.is_file():
+            source = Path(self.photos.CACHE) / Path(name).name
+            if not (source.is_file() and source.stat().st_size == row["bytes"]):
+                source = self.photos.fetch(row)
+            with Image.open(source) as img:
+                img = ImageOps.exif_transpose(img).convert("RGB")
+                img.thumbnail((size, size))
+                self.thumbs.mkdir(parents=True, exist_ok=True)
+                img.save(out, "JPEG", quality=82)
+            cached = sorted(self.thumbs.glob("*.jpg"), key=lambda p: p.stat().st_mtime)
+            for old in cached[:-300]:
+                old.unlink(missing_ok=True)
+        return out.read_bytes()
 DOTS_PER_MM = 8
 READABLE_MIN_DOTS = 20      # about 2.5 mm of cap height
 REPEAT_WINDOW_SECONDS = 60
@@ -104,6 +179,11 @@ def clean_job(raw):
     if type(copies) is not int or not 1 <= copies <= 100:
         raise ValueError("Copies must be a whole number from 1 to 100.")
     job = {"kind": kind, "copies": copies}
+    photo = raw.get("photo")
+    if photo is not None:
+        if not isinstance(photo, str) or len(photo) > PHOTO_NAME_MAX:
+            raise ValueError("Bad photo reference.")
+        job["photo"] = photo
     if kind == "usb":
         names = raw.get("names") or []
         if not isinstance(names, list) or not all(isinstance(n, str) for n in names):
@@ -208,7 +288,8 @@ def job_title(job):
 
 
 class LabelApp:
-    def __init__(self, local_dir, dry_run=False, sender=None):
+    def __init__(self, local_dir, dry_run=False, sender=None, inbox=None):
+        self.inbox = inbox or PhotoInbox()
         self.store = Store(local_dir)
         self.dry_run = dry_run
         self.print_lock = threading.Lock()
@@ -343,6 +424,18 @@ class Handler(BaseHTTPRequestHandler):
         }
         if self.path in routes:
             return self._send(200, routes[self.path]())
+        url = urlparse(self.path)
+        if url.path in ("/api/photos", "/api/photos/thumb", "/api/photos/image"):
+            try:
+                if url.path == "/api/photos":
+                    return self._send(200, {"photos": app.inbox.listing()})
+                name = parse_qs(url.query).get("name", [""])[0]
+                size = 360 if url.path.endswith("thumb") else 1800
+                return self._send(200, app.inbox.image(name, size), "image/jpeg")
+            except ValueError as exc:
+                return self._send(404, {"error": str(exc)})
+            except Exception as exc:  # ssh/network problems shown in the UI
+                return self._send(502, {"error": str(exc) or "Photo inbox unavailable."})
         name = "index.html" if self.path in ("/", "/index.html") else None
         if name:
             return self._send(200, (WEB / name).read_bytes(), "text/html; charset=utf-8")

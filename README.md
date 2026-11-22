@@ -49,6 +49,9 @@ and needs no extra packages. It offers:
 - Queue of saved drafts and auto-saved work that survive restarts.
 - History with search, Reprint, Edit copy, and "Printed OK / Problem" confirmation.
 - Printer host/port settings, a connection test that sends no data, light/dark theme.
+- **Photos** view: thumbnails from the phone inbox, **Wait for next photo** (opens it as
+  soon as it arrives), a large viewer, and "Label a part / box" which keeps the photo
+  beside the editor as a reference. Only the photo's name goes into history.
 - Shortcuts: Ctrl+Enter print, Ctrl+S queue, Alt+1/2/3 label type.
 
 Drafts, queue, history and settings live in `local/ui-*.json` (ignored by Git).
@@ -154,9 +157,13 @@ Samsung SM-G990U1 camera ──FolderSync instant upload (SFTP, Wi-Fi)──> rd
 
    Each prints a local path under `lab-photos/cache/` (disposable, 1 GiB cap).
    Prefer `wait` or `latest --max-age`: plain `latest` can return an old, unrelated photo.
-3. An agent (or you) reads the original image, identifies the part, writes the label
-   text (see the `lab-label-writer` skill), previews it in the label app, then prints.
-4. Save any photo worth keeping outside the inbox: it expires after 14 days.
+3. Identify or inventory it. In Claude Code (opened in this repo):
+   `/identify part` (component, logic board, device model) or
+   `/identify box ROBOT CAR KIT` (compare a box photo with its inventory note).
+   Both wait for the next photo if you do not name one. Or open it in the label app's
+   Photos view and write the label yourself.
+4. Nothing else. Photos are disposable working copies: once the box is inventoried or
+   the part identified, the photo has done its job. The inbox deletes them automatically.
 
 ### Health checks
 

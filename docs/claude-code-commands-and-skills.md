@@ -54,8 +54,18 @@ description: Writes and reviews text for James's Zebra lab labels ... Use whenev
 Try it: ask "what should the label for this HC-SR04 bag say?" without any slash.
 Claude should pick up the skill on its own.
 
+## More commands in this repo
+
+- `/identify part|box [PHOTO] [BOX]`: waits for the next phone photo, identifies a
+  part or inventories a box, proposes label text, and stops for your yes.
+- `/handoff [project]`: writes a dated status block into the project's Obsidian
+  Dev Handoff note and pushes lab-context. It shows the `` !`git status -sb` ``
+  trick: those commands run *before* Claude starts, so their output arrives in
+  the prompt without spending tool calls (a token saver).
+
 ## Ideas to build next yourself
 
 - `/usb-sheet`: queue scanned USB names until a sheet is full.
+- `/lab-sync`: pull both repos and list anything unpushed.
 - A `zpl-debugging` skill describing `^LT`, `^PQ`, `^GFA` and the calibration.
 - `/inventory-box NAME`: read a box note from the vault and draft its label.

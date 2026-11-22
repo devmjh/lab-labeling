@@ -147,3 +147,52 @@ class HttpTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FakePhotos:
+    def __init__(self, directory):
+        from PIL import Image
+        self.CACHE = Path(directory) / "cache"
+        self.CACHE.mkdir()
+        self.fetches = 0
+        Image.new("RGB", (300, 400), "red").save(self.CACHE / "a.jpg")
+        self.rows = [{"name": "a.jpg", "bytes": (self.CACHE / "a.jpg").stat().st_size,
+                      "modified": 0, "arrived": 100.0}]
+
+    def list_rows(self):
+        return self.rows
+
+    def fetch(self, row):
+        self.fetches += 1
+        return self.CACHE / row["name"]
+
+
+class PhotoInboxTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.photos = FakePhotos(self.tmp.name)
+        self.inbox = label_app.PhotoInbox(self.photos)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_thumbnail_is_small_jpeg_and_cached(self):
+        data = self.inbox.image("a.jpg", 100)
+        self.assertTrue(data.startswith(b"\xff\xd8"))
+        from PIL import Image
+        import io
+        self.assertLessEqual(max(Image.open(io.BytesIO(data)).size), 100)
+        self.inbox.image("a.jpg", 100)
+        self.assertEqual(self.photos.fetches, 0)  # already in cache, never refetched
+
+    def test_only_inbox_names_are_served(self):
+        for name in ("../../etc/passwd", "missing.jpg", "x" * 300):
+            with self.assertRaises(ValueError):
+                self.inbox.image(name, 100)
+
+    def test_photo_reference_kept_in_job_but_not_fingerprint(self):
+        app = label_app.LabelApp(self.tmp.name, sender=FakeSender(), inbox=self.inbox)
+        a = app.preview({"kind": "bag", "lines": ["ESP32"], "photo": "a.jpg"})
+        b = app.preview({"kind": "bag", "lines": ["ESP32"]})
+        self.assertEqual(a["job"]["photo"], "a.jpg")
+        self.assertEqual(a["fingerprint"], b["fingerprint"])

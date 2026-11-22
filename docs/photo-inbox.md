@@ -31,7 +31,7 @@ python3 lab-photos/photos.py phone         # read-only adb phone check
 - Protect uploads and photos changed within the last hour. A burst can fill the dedicated filesystem; transfers then fail and retry after space is available. The host remains bounded.
 - Retention covers everything in this dedicated inbox, including abandoned upload files. It does not touch any other directory or delete phone originals.
 - Agent download cache: **1 GiB** budget, 100 MiB maximum per fetched photo.
-- Save worthwhile photos outside this temporary inbox before expiry. No automatic backup is configured.
+- Photos are disposable: their job ends once a box is inventoried or a part identified. No backup is configured, by design.
 
 ## Installed phone configuration
 
