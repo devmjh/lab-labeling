@@ -30,7 +30,7 @@ description: James's rules for identifying electronic parts, logic boards and de
 
 ## Inventory a box from a photo
 - List what is visible; give counts only when clear.
-- Compare with `Inventory/Boxes/<Box Name>.md` in the vault and report
+- Compare with `Projects/AI Tech Lab/Inventory/Boxes/<Box Name>.md` in the vault and report
   **new**, **missing** (not visible is not proof it is gone) and **uncertain**.
 
 ## Editing the vault

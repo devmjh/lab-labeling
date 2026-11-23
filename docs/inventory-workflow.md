@@ -27,12 +27,14 @@ storage. A future UI should show inventory-save and print-send results separatel
 
 ## Structure
 
+Vault paths (moved under `Projects/AI Tech Lab/` on 2026-11-22):
+
 ```text
-Inventory/Lab Inventory.md         # category links and Still to inventory checklist
-Inventory/Inventory.base           # existing Bases table; do not edit unless asked
-Inventory/Boxes/<Box Name>.md
-Inventory/Drawers/Drawer NN.md      # Drawer 01 through Drawer 15 as inventoried
-Inventory/Items/<Item Name>.md
+Projects/AI Tech Lab/Inventory/Lab Inventory.md         # category links and Still to inventory checklist
+Projects/AI Tech Lab/Inventory/Inventory.base           # existing Bases table; do not edit unless asked
+Projects/AI Tech Lab/Inventory/Boxes/<Box Name>.md
+Projects/AI Tech Lab/Inventory/Drawers/Drawer NN.md      # Drawer 01 through Drawer 15 as inventoried
+Projects/AI Tech Lab/Inventory/Items/<Item Name>.md
 Templates/Box template.md          # do not change unless asked
 ```
 

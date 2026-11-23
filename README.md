@@ -194,7 +194,7 @@ are references, not workstation setup steps; do not run them to test labeling.
 
 The inventory and durable lab context remain in the separate Obsidian repository
 `devmjh/lab-context`. Pull that repository on each computer, then read its `AGENTS.md`
-and `Inventory/Lab Inventory.md` before resuming. This shares records, procedures and
+and `Projects/AI Tech Lab/Inventory/Lab Inventory.md` before resuming. This shares records, procedures and
 decisions rather than chat history. These tools do not automatically edit or sync
 Obsidian. Identification and inventory updates remain agent-assisted.
 

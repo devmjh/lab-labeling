@@ -27,11 +27,11 @@ for label text.
   (e.g. "the chip near the USB port, straight on") instead of guessing.
 - Propose Bag/device label text using the lab-label-writer skill.
 - Suggest which existing box it belongs in: `git -C ../lab-context pull --ff-only`,
-  then read `../lab-context/Inventory/Lab Inventory.md` (box list only).
+  then read `../lab-context/Projects/AI Tech Lab/Inventory/Lab Inventory.md` (box list only).
 
 ## 2b. Mode `box`: inventory a box
 - List what is visible, grouped, with counts only when they are clear.
-- If a box name was given, read `../lab-context/Inventory/Boxes/<BOX NAME>.md`
+- If a box name was given, read `../lab-context/Projects/AI Tech Lab/Inventory/Boxes/<BOX NAME>.md`
   after pulling and show: **new** (in photo, not in note), **missing** (in note,
   not visible), **uncertain**. Missing from one photo is not proof it is gone.
 - Propose the note edits and a Box label; follow `docs/inventory-workflow.md`.
